@@ -1,5 +1,6 @@
 name = GSA Analytics
 description = Module to implement the General Services Agency's federated (Google) analytics javascript.
 core = 7.x
-files[] = gsa_analytics.module
-
+version = 7.x-1.x
+package = Analytics
+configure = admin/config/system/gsa-analytics
