@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @file
  * gsa_analytics.module
@@ -7,16 +6,6 @@
  * federated (Google) analytics javascript. 
  * https://github.com/GSA/DAP-Gov-wide-GA-Code
  */
-
-// gsa_analytics global variables
-define('gsa_analytics_url', 'https://github.com/GSA/DAP-Gov-wide-GA-Code');
-define('gsa_analytics_agency_name', '');
-define('gsa_analytics_sub­agency_name', '');
-define('gsa_analytics_cookie_timeout', '24');
-define('gsa_analytics_additional_ua', '');
-define('gsa_analytics_search_params', 'q');
-define('gsa_analytics_file_extensions', '');
-define('gsa_analytics_youtube_tracking', 'false');
 
 /**
  * Implements hook_page_build().
@@ -26,89 +15,25 @@ function gsa_analytics_page_build() {
   drupal_add_js($path .'/js/federated-analytics.all.min.js', array('every_page' => TRUE));
 }
 
-
 /**
  * Implements hook_menu().
  */
 function gsa_analytics_menu() {
-  $items = array();
-  $items['admin/system/gsa_analytics'] = array(
-    'title' => 'GSA Analytics',
-    'type' => MENU_NORMAL_ITEM,
+  $items['admin/config/system/gsa-analytics'] = array(
+    'title' => 'GSA Analytics Configuration',
+    'description' => 'GSA Analytics Configuration Page',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('gsa_analytics_form'),
-    'access arguments' => array('administer site configuration'),
+    'page arguments' => array('gsa_analytics_admin_settings_form'),
+    'file' => 'gsa_analytics.admin.inc',
+    'access callback' => 'user_access',
+    'access arguments' => array('access administration pages'),
+    'theme callback' => 'variable_get',
+    'theme arguments' => array('admin_theme'),
+    'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
+    'weight' => 9
   );
+
   return $items;
-}
-
-/**
- * Page callback for gsa_analytics.
- */
-function gsa_analytics_form($form, $form_state) {
-  $form = array();
-  $form['gsa_analytics_agency_name'] = array(
-    '#required' => TRUE,
-    '#size' => 32,
-    '#default_value' => variable_get('gsa_analytics_agency_name', gsa_analytics_agency_name),
-    '#description' => t('A short, uppercase abbreviation uniquely identifying the Agency. e.g. DHS, EPA, GSA, etc'),
-    '#weight' => 0,
-    '#type' => 'textfield',
-    '#title' => t('Agency Name'),
-  );
-  $form['gsa_analytics_sub­agency_name'] = array(
-    '#required' => FALSE,
-    '#size' => 32,
-    '#default_value' => variable_get('gsa_analytics_sub­agency_name', gsa_analytics_sub­agency_name),
-    '#description' => t('A short, uppercase abbreviation uniquely identifying the Agency. e.g. DHS, EPA, GSA, etc'),
-    '#weight' => 0,
-    '#type' => 'textfield',
-    '#title' => t('Sub-Agency Name'),
-  );
-  $form['gsa_analytics_cookie_timeout'] = array(
-    '#required' => FALSE,
-    '#size' => 4,
-    '#default_value' => variable_get('gsa_analytics_cookie_timeout', gsa_analytics_cookie_timeout),
-    '#description' => t('An integer value specifying period in months.'),
-    '#weight' => 0,
-    '#type' => 'textfield',
-    '#title' => t('Visitor Cookie Timeout'),
-  );
-  $form['gsa_analytics_additional_ua'] = array(
-    '#required' => FALSE,
-    '#size' => 32,
-    '#default_value' => variable_get('gsa_analytics_additional_ua', gsa_analytics_additional_ua),
-    '#description' => t('ID(s) for optional tracking to a second, alternative GA account (UA­XXXX­YY) belonging to and managed by the Agency. Multiple UA ids can be specified in a comma­-separated list.'),
-    '#weight' => 0,
-    '#type' => 'textfield',
-    '#title' => t('Parallel UA'),
-  );
-  $form['gsa_analytics_search_params'] = array(
-    '#required' => FALSE,
-    '#size' => 32,
-    '#default_value' => variable_get('gsa_analytics_search_params', gsa_analytics_search_params),
-    '#description' => t('A single value or a list of comma­-separated search parameter names.'),
-    '#weight' => 0,
-    '#type' => 'textfield',
-    '#title' => t('Search Parameter(s)'),
-  );
-  $form['gsa_analytics_file_extensions'] = array(
-    '#required' => FALSE,
-    '#size' => 64,
-    '#default_value' => variable_get('gsa_analytics_file_extensions', gsa_analytics_file_extensions),
-    '#description' => t('A comma separated list of 1 or more extensions. Current List is xls, xlsx, doc, docx, ppt, pptx, pdf, txt, zip, rar, 7z, gz, tgz, exe, wma, mov, avi, wmv, mp3, mp4, csv, tsv, mobi, epub, swf'),
-    '#weight' => 0,
-    '#type' => 'textfield',
-    '#title' => t('Additional Download Extensions'),
-  );
-  $form['gsa_analytics_youtube_tracking'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Include Youtube tracking?'),
-    '#default_value' => variable_get('gsa_analytics_youtube_tracking', 0),
-    '#description' => t("Check this box if you want the script to track YouTube."),
-  );
-
-  return system_settings_form($form);
 }
 
 /**
